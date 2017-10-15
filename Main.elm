@@ -1,10 +1,9 @@
-port module Todo exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Phoenix.Socket
 import Phoenix.Channel
-import Phoenix.Push
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (..)
 import Debug exposing (log)
@@ -42,7 +41,6 @@ type alias Model =
 type Msg
     = NoOp
     | SocketMsg (Phoenix.Socket.Msg Msg)
-    | RequestEntries
     | ReceiveEntries Encode.Value
 
 
@@ -59,7 +57,6 @@ init =
 
         channel =
             Phoenix.Channel.init channelName
-                |> Phoenix.Channel.onJoin (always RequestEntries)
 
         socketInit =
             Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
@@ -91,17 +88,6 @@ update msg model =
             let
                 ( socket, cmd ) =
                     Phoenix.Socket.update msg model.socket
-            in
-                { model | socket = socket } ! [ Cmd.map SocketMsg cmd ]
-
-        RequestEntries ->
-            let
-                push =
-                    Phoenix.Push.init "ping" "todo:list"
-                        |> Phoenix.Push.onOk ReceiveEntries
-
-                ( socket, cmd ) =
-                    Phoenix.Socket.push push model.socket
             in
                 { model | socket = socket } ! [ Cmd.map SocketMsg cmd ]
 

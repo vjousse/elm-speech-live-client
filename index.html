@@ -11,8 +11,16 @@
 <body>
 </body>
 
+<div id="main">
+    <div id="header">Experimental transcription</div>
+    <div id="elm"></div>
+    <div id="footer"></div>
+</div>
+
+
 <script type="text/javascript">
-var todomvc = Elm.Main.fullscreen();
+    var node = document.getElementById('elm');
+    var elmApp = Elm.Main.embed(node);
 </script>
 
 </html>
